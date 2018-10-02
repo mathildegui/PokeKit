@@ -1,0 +1,45 @@
+{
+  "project_info": {
+    "project_number": "967051123408",
+    "firebase_url": "https://poke-kit.firebaseio.com",
+    "project_id": "poke-kit",
+    "storage_bucket": "poke-kit.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:967051123408:android:53edb623c6ffe440",
+        "android_client_info": {
+          "package_name": "com.mathilde.pokekit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "967051123408-3brea75n1r4i5bvi1gqiqr2d47iaras4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAAw_YiDJ7Bt8YBOX1g7swzfDqRMHw0Mmo"
+        },
+        {
+          "current_key": "AIzaSyAAw_YiDJ7Bt8YBOX1g7swzfDqRMHw0Mmo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
