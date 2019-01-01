@@ -13,6 +13,10 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        aaptOptions {
+            noCompress "tflite"
+        }
     }
     buildTypes {
         release {
@@ -26,6 +30,8 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation "com.android.support:design:28.0.0"
+
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     implementation 'android.arch.lifecycle:extensions:1.1.1'
     testImplementation 'junit:junit:4.12'
@@ -35,6 +41,15 @@ dependencies {
     //Firebase
     implementation 'com.google.firebase:firebase-core:16.0.6'
     implementation 'com.google.firebase:firebase-ml-model-interpreter:16.2.4'
+
+    //Anko
+    implementation "org.jetbrains.anko:anko-commons:$anko_version"
+
+    //TapTarget
+    implementation 'com.getkeepsafe.taptargetview:taptargetview:1.12.0'
+
+    //CameraView
+    implementation 'com.otaliastudios:cameraview:1.6.0'
 }
 
 apply plugin: 'com.google.gms.google-services'
