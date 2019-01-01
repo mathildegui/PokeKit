@@ -43,7 +43,7 @@ class MainFragment : Fragment() {
         loadModel()
     }
 
-    fun loadModel() {
+    private fun loadModel() {
         var conditionsBuilder = FirebaseModelDownloadConditions.Builder().requireWifi()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             // Enable advanced conditions on Android Nougat and newer.
@@ -72,7 +72,7 @@ class MainFragment : Fragment() {
 
         val options =  FirebaseModelOptions.Builder()
                 .setCloudModelName("poke-detector")
-                .setLocalModelName("pokedex")
+                .setLocalModelName("poke-detector")
                 .build()
 
         val firebaseInterpreter =
