@@ -5,6 +5,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.graphics.*
 import android.media.ExifInterface
+import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import android.support.annotation.RequiresApi
@@ -17,6 +18,7 @@ import com.google.firebase.ml.custom.*
 import com.google.firebase.ml.custom.model.FirebaseCloudModelSource
 import com.google.firebase.ml.custom.model.FirebaseLocalModelSource
 import com.google.firebase.ml.custom.model.FirebaseModelDownloadConditions
+import com.google.firebase.storage.FirebaseStorage
 import com.mathilde.pokekit.R
 import com.mathilde.pokekit.model.Pokemon
 import com.mathilde.pokekit.ui.camera.BaseCameraActivity
@@ -35,6 +37,7 @@ import android.support.v7.widget.LinearLayoutManager
 import com.mathilde.pokekit.HandleFileUpload
 import com.mathilde.pokekit.adapter.PokemonAdapter
 import kotlinx.android.synthetic.main.pokemon_sheet.*
+import org.jetbrains.anko.toast
 import java.io.ByteArrayOutputStream
 
 
@@ -57,7 +60,22 @@ val pokeArray: Array<String> = arrayOf("abra", "aerodactyl", "alakazam", "arbok"
 
 class MainActivity : BaseCameraActivity(), HandleFileUpload {
     override fun uploadImageToStorage(name: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        //TODO - To change body of created functions use File | Settings | File Templates.
+
+        sheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        val baos = ByteArrayOutputStream()
+        currentBitmap.compress(Bitmap.CompressFormat.JPEG, 60, baos)
+        val data = baos.toByteArray()
+        if(isNetworkAvailable()) {
+            toast("Thanks for feedback")
+            root
+        }
+    }
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetworkInfo = connectivityManager.activeNetworkInfo
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected
     }
 
     companion object {
@@ -88,6 +106,8 @@ class MainActivity : BaseCameraActivity(), HandleFileUpload {
     private val notificationManager by lazy {
         getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     }
+
+    private val rootRef = FirebaseStorage.getInstance().reference.child("pokemon")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
