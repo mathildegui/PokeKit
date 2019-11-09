@@ -1,8 +1,8 @@
 package com.mathilde.pokekit.ui.camera
 
 import android.os.Bundle
-import android.support.design.widget.BottomSheetBehavior
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.mathilde.pokekit.R
 import com.otaliastudios.cameraview.Gesture
 import com.otaliastudios.cameraview.GestureAction

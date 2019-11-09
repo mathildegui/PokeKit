@@ -1,44 +1,37 @@
 package com.mathilde.pokekit.ui.main
 
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.media.ExifInterface
 import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
-import android.support.annotation.RequiresApi
-import android.support.design.widget.BottomSheetBehavior
-import android.support.design.widget.Snackbar
-import android.util.Log
-import android.view.View
-import android.widget.Toast
+import androidx.annotation.RequiresApi
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.firebase.ml.common.modeldownload.FirebaseModelManager
+import com.google.firebase.ml.common.modeldownload.FirebaseRemoteModel //FirebaseCloudModelSource
+import com.google.firebase.ml.common.modeldownload.FirebaseLocalModel //FirebaseLocalModelSource
+import com.google.firebase.ml.common.modeldownload.FirebaseModelDownloadConditions
 import com.google.firebase.ml.custom.*
-import com.google.firebase.ml.custom.model.FirebaseCloudModelSource
-import com.google.firebase.ml.custom.model.FirebaseLocalModelSource
-import com.google.firebase.ml.custom.model.FirebaseModelDownloadConditions
 import com.google.firebase.storage.FirebaseStorage
-import com.mathilde.pokekit.R
+import com.mathilde.pokekit.HandleFileUpload
+import com.mathilde.pokekit.adapter.PokemonAdapter
 import com.mathilde.pokekit.model.Pokemon
 import com.mathilde.pokekit.ui.camera.BaseCameraActivity
 import com.otaliastudios.cameraview.CameraListener
 import kotlinx.android.synthetic.main.main_activity.*
+import kotlinx.android.synthetic.main.pokemon_sheet.*
 import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.toast
 import org.jetbrains.anko.uiThread
 import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import android.os.SystemClock
-import com.google.android.gms.common.util.IOUtils.toByteArray
-import android.opengl.ETC1.getHeight
-import android.opengl.ETC1.getWidth
-import android.support.v7.widget.LinearLayoutManager
-import com.mathilde.pokekit.HandleFileUpload
-import com.mathilde.pokekit.adapter.PokemonAdapter
-import kotlinx.android.synthetic.main.pokemon_sheet.*
-import org.jetbrains.anko.toast
-import java.io.ByteArrayOutputStream
 
 
 //A list of all the pokemons
@@ -68,7 +61,7 @@ class MainActivity : BaseCameraActivity(), HandleFileUpload {
         val data = baos.toByteArray()
         if(isNetworkAvailable()) {
             toast("Thanks for feedback")
-            root
+//            root
         }
     }
 
@@ -133,6 +126,7 @@ class MainActivity : BaseCameraActivity(), HandleFileUpload {
             itemAdapter.setList(emptyList())
             sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             cameraView.addCameraListener(object : CameraListener() {
+                @RequiresApi(Build.VERSION_CODES.N)
                 override fun onPictureTaken(jpeg: ByteArray) {
 //                    isRefreshVisible = true
                     convertByteArrayToBitmap(jpeg)
@@ -202,29 +196,46 @@ class MainActivity : BaseCameraActivity(), HandleFileUpload {
         }
 
 
-        val conditions = conditionsBuilder.build() as FirebaseModelDownloadConditions
+//        val conditions = conditionsBuilder.build() as FirebaseModelDownloadConditions
         // Build a FirebaseCloudModelSource object by specifying the name you assigned the model
         // when you uploaded it in the Firebase console.
 
-        val cloudSource = FirebaseCloudModelSource.Builder("poke-detector")
+        val remoteModel = FirebaseCustomRemoteModel.Builder("poke-detector")
+                .build()
+
+        val conditions = FirebaseModelDownloadConditions.Builder()
+                .requireWifi()
+                .build()
+        FirebaseModelManager.getInstance().download(remoteModel, conditions)
+                .addOnCompleteListener {
+                    // Success.
+                }
+
+        /*val cloudSource = FirebaseCloudModelSource.Builder("poke-detector")
                 .enableModelUpdates(true)
                 .setInitialDownloadConditions(conditions)
                 .setUpdatesDownloadConditions(conditions)
                 .build()
-        FirebaseModelManager.getInstance().registerCloudModelSource(cloudSource)
+        FirebaseModelManager.getInstance().registerCloudModelSource(cloudSource)*/
+
+        val localModel = FirebaseCustomLocalModel.Builder()
+                .setAssetFilePath("pokedex.tflite")
+                .build()
+
+        val options = FirebaseModelInterpreterOptions.Builder(localModel).build()
 
         //Load a local model using the FirebaseLocalModelSource Builder class
-        val fireBaseLocalModelSource = FirebaseLocalModelSource.Builder("poke-detector")
+       /* val fireBaseLocalModelSource = FirebaseLocalModelSource.Builder("poke-detector")
                 .setAssetFilePath("pokedex.tflite") //name of the .tflite model stored in asset folder
                 .build()
 
         //Registering the model loaded above with the ModelManager Singleton
-        FirebaseModelManager.getInstance().registerLocalModelSource(fireBaseLocalModelSource)
+        FirebaseModelManager.getInstance().registerLocalModelSource(fireBaseLocalModelSource)*/
 
-        val options =  FirebaseModelOptions.Builder()
+        /*val options =  FirebaseModelOptions.Builder()
                 .setCloudModelName("poke-detector")
                 .setLocalModelName("poke-detector")
-                .build()
+                .build()*/
 
         firebaseInterpreter =
                 FirebaseModelInterpreter.getInstance(options)!!
@@ -233,6 +244,9 @@ class MainActivity : BaseCameraActivity(), HandleFileUpload {
                 .setInputFormat(0, FirebaseModelDataType.FLOAT32, intArrayOf(1, 224, 224, 3))
                 .setOutputFormat(0, FirebaseModelDataType.FLOAT32, intArrayOf(1, 149))
                 .build()
+
+
+
 
         //Show target if not already shown
 //        if(!activity?.defaultSharedPreferences?.contains("TARGET_INTRO")!!) {
